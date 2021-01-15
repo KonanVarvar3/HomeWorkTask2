@@ -1,6 +1,8 @@
 package com.homework2.linkedlist;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 
@@ -69,7 +71,23 @@ public class MyLinkedList<E> implements ILinkedList<E> {
         if (head == null) {
             throw new EmptyListException("List is empty");
         }
-        head = null;
+
+        Node current = head;
+        Node previous = current;
+
+        while (true) {
+            previous = current;
+            current = current.getNextNode();
+
+            if (current.getNextNode() == null) {
+                previous.setNextNode(null);
+                current = head;
+            }
+            if (current == head) {
+                head = null;
+                return;
+            }
+        }
     }
 
     private void CheckedIndexAndHead(int index) throws IncorrectIndexException {
@@ -190,15 +208,21 @@ public class MyLinkedList<E> implements ILinkedList<E> {
     }
 
     @Override
-    public E[] toArray() {
+    public <E> E[] toArray(E[] array) {
+        if(array.length<size){
+            array = (E[])Array.newInstance(array.getClass().getComponentType(), size);
+        }
 
-        E[] array = (E[]) new Object[size];
-
+        Object [] newArray = array;
         Node current = head;
 
-        for (int i = 0; i < size; i++) {
-            array[i] = (E) current.getElement();
-            current = current.getNextNode();
+        for(int i=0;i<size;i++){
+            newArray[i] =current.getElement();
+            current= current.getNextNode();
+        }
+
+        if(array.length>size){
+            array[size]=null;
         }
         return array;
     }
@@ -220,6 +244,7 @@ public class MyLinkedList<E> implements ILinkedList<E> {
                 str = str.concat("]");
                 break;
             }
+            str = str.concat(", ");
 
             current = current.getNextNode();
         }
